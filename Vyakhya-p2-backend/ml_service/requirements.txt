@@ -1,0 +1,14 @@
+# The scoring service runs the FROZEN risk engine, whose artifacts were pickled with the pins in
+# ../../backend/requirements-core.txt. Unpickling them needs the SAME versions, so this service is
+# meant to run in that environment (backend/.venv). Only Flask is added on top.
+#   setup:  ..\..\backend\.venv\Scripts\python.exe -m pip install -r requirements.txt
+flask==3.1.3
+flask-cors==6.0.5
+# engine pins (must match backend/requirements-core.txt; do not upgrade independently)
+scikit-learn==1.4.0
+xgboost==2.0.3
+pandas==2.1.4
+numpy==1.26.3
+scipy==1.11.4
+joblib==1.6.0
+pytest==7.4.4

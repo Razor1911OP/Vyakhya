@@ -1,0 +1,30 @@
+{
+  "name": "vyakhya-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vyakhya Node/Express API: redaction, scoring proxy, audit log",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start:env": "node --env-file=.env server.js",
+    "test": "node --experimental-vm-modules --no-warnings=ExperimentalWarning node_modules/jest/bin/jest.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "mongodb-memory-server": "11.3.0",
+    "supertest": "^7.3.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 60000
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "jsonwebtoken": "9.0.3",
+    "mongoose": "^9.11.4"
+  }
+}

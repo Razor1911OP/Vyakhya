@@ -1,0 +1,27 @@
+{
+  "model_version": "risk-0.1.0",
+  "text_weight": 0.2,
+  "bands": {
+    "both": {
+      "medium": 88.8,
+      "high": 90.0
+    },
+    "text": {
+      "medium": 82.5,
+      "high": 89.2
+    },
+    "txn": {
+      "medium": 90.0,
+      "high": 90.0
+    }
+  },
+  "hard_rule_floor": 90,
+  "seed": 42,
+  "trained_at": "2026-10-25T02:00:39+00:00",
+  "data": {
+    "text": "UCI SMS Spam (public, English, UK 2000s) + Vyakhya synthetic en/hi/hi-en",
+    "transaction": "public synthetic mobile-money data (PaySim), not UPI; sender history from Vyakhya synthetic transactions"
+  },
+  "feedback_records_seen": 0,
+  "disclaimer": "All metrics come from synthetic and public datasets (UCI SMS Spam, Vyakhya synthetic messages, PaySim). They are not production accuracy."
+}

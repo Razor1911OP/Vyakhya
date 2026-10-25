@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "placeholder": true,
+    "source": "frontend/public/mock-metrics (sample file)",
+    "generated_at": "2026-10-25T00:00:00Z",
+    "dataset": "jobs/gen_synthetic.py (seed 42)",
+    "note": "Placeholder for UI development. Replace with the output of backend/jobs/eval.py."
+  },
+  "precision": 0.87,
+  "target": 0.9,
+  "support": 412
+}

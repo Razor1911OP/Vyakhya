@@ -1,0 +1,57 @@
+{
+  "model_name": "vyakhya_risk",
+  "version": "risk-0.2.0",
+  "shipped_system": "with_rule_score",
+  "frozen": true,
+  "rules_version": "v2",
+  "rules_sha256": "5e626a57a3b92c7d5e3249ed7c4ec0dc9f7a8f8b7e1092a65962f493f4070413",
+  "handwritten_test_sha256": "9a1ade6b9f9b01e5b27bfe856a62d9f4dad604e919c23d3966805cf98aa1a4a9",
+  "seed": 42,
+  "input_schema": {
+    "text": "message, optional, capped at 1000 chars",
+    "txn": "amount, hour, direction (debit|collect|credit), beneficiary_prior_txns, amount_vs_history_percentile, txn_count_last_hour, txn_count_last_day, fan_out_count"
+  },
+  "artifacts": [
+    "text_model.joblib",
+    "paysim_model.joblib",
+    "sender_model.joblib",
+    "rule_calibrator.joblib",
+    "fusion.json"
+  ],
+  "weights": [
+    0.35,
+    0.25,
+    0.4
+  ],
+  "bands": {
+    "both": {
+      "medium": 48.8,
+      "high": 59.7,
+      "n_benign_validation": 1120,
+      "label": "tuned on synthetic data, re-calibrate at pilot"
+    },
+    "text": {
+      "medium": 37.8,
+      "high": 53.3,
+      "n_benign_validation": 5947,
+      "label": "tuned on synthetic data, re-calibrate at pilot"
+    },
+    "txn": {
+      "medium": 68.6,
+      "high": 94.9,
+      "n_benign_validation": 1120,
+      "label": "tuned on synthetic data, re-calibrate at pilot"
+    }
+  },
+  "cutoffs": "tuned on synthetic data, re-calibrate at pilot",
+  "text_model_compare": {
+    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2": "not evaluated"
+  },
+  "training_data": {
+    "text": "UCI SMS Spam (public, English, UK 2000s) + Vyakhya synthetic en/hi/hi-en (generator v2)",
+    "transaction": "public synthetic mobile-money data (PaySim), not UPI; sender history from Vyakhya synthetic transactions"
+  },
+  "metrics_file": "metrics/risk_eval.json",
+  "disclaimer": "All metrics come from synthetic and public datasets (UCI SMS Spam, Vyakhya synthetic messages, PaySim). They are not production accuracy.",
+  "trained_at": "2026-10-25T03:23:19+00:00"
+}

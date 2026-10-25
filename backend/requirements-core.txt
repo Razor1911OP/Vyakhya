@@ -1,0 +1,14 @@
+# Core deps for the detection engine + model training (no torch/transformers yet)
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+python-json-logger==2.0.7
+scikit-learn==1.4.0
+xgboost==2.0.3
+pandas==2.1.4
+numpy==1.26.3
+scipy==1.11.4
+joblib==1.6.0
+pytest==7.4.4
+httpx==0.26.0

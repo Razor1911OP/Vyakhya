@@ -1,0 +1,26 @@
+{
+  "a) KYC-expiry scam (bit.ly, pay Rs 1 to verify, raw phone/UPI/account in text)": {
+    "session_id": "ic-kyc-TAG",
+    "context": {"new_device": true, "new_geo": false, "screen_share": false, "call_active": true},
+    "redacted_text": "Dear SBI customer, your KYC has expired and your account will be blocked today. Pay Rs 1 to verify immediately at bit.ly/kyc-upd8 or call 9876543210. Send to kyc.verify@ybl, a/c 123456789012.",
+    "payment": {"payee_vpa": "kyc.verify@ybl", "amount": 1, "payee_age_days": 2, "user_avg_amount": 1200, "hour": 22}
+  },
+  "b) benign: dinner split to a known contact": {
+    "session_id": "ic-benign-TAG",
+    "context": {"new_device": false, "new_geo": false, "screen_share": false, "call_active": false},
+    "redacted_text": "Dinner was great, sending my share. See you Sunday!",
+    "payment": {"payee_vpa": "priya.s@okaxis", "amount": 740, "payee_age_days": 900, "user_avg_amount": 800, "payee_prior_txns": 64, "hour": 20}
+  },
+  "c) Hinglish refund scam (collect + PIN to receive)": {
+    "session_id": "ic-hinglish-TAG",
+    "context": {"new_device": false, "new_geo": false, "screen_share": true, "call_active": true},
+    "redacted_text": "Aapka refund Rs 2,000 pending hai. Paise paane ke liye collect request approve karo aur UPI PIN daalo, jaldi!",
+    "payment": {"payee_vpa": "refund.desk@okicici", "amount": 2000, "payee_age_days": 1, "user_avg_amount": 900, "direction": "collect", "hour": 15}
+  },
+  "c2) Hindi (Devanagari) digital-arrest scam": {
+    "session_id": "ic-hindi-TAG",
+    "context": {"new_device": false, "new_geo": false, "screen_share": false, "call_active": true},
+    "redacted_text": "यह मुंबई साइबर पुलिस है। आपके नाम पर गिरफ्तारी वारंट जारी हुआ है। तुरंत ₹50,000 सत्यापन खाते में भेजें और किसी को न बताएं।",
+    "payment": {"payee_vpa": "verify.acct@okbank", "amount": 50000, "payee_age_days": 0, "user_avg_amount": 1500, "hour": 11}
+  }
+}

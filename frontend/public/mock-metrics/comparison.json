@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "placeholder": true,
+    "source": "frontend/public/mock-metrics (sample file)",
+    "generated_at": "2026-10-25T00:00:00Z",
+    "dataset": "jobs/gen_synthetic.py (seed 42)",
+    "note": "Placeholder for UI development. Replace with the output of backend/jobs/eval.py."
+  },
+  "rows": [
+    {
+      "metric": "Mean unseen-family recall @ FPR \u2264 1%",
+      "baseline": 0.6,
+      "fused": 0.74,
+      "higher_is_better": true
+    },
+    {
+      "metric": "Precision at CRITICAL",
+      "baseline": 0.71,
+      "fused": 0.87,
+      "higher_is_better": true
+    },
+    {
+      "metric": "F1 (all families)",
+      "baseline": 0.78,
+      "fused": 0.85,
+      "higher_is_better": true
+    },
+    {
+      "metric": "False-positive rate",
+      "baseline": 0.012,
+      "fused": 0.008,
+      "higher_is_better": false
+    },
+    {
+      "metric": "p95 latency (ms)",
+      "baseline": 24,
+      "fused": 168,
+      "higher_is_better": false
+    }
+  ]
+}

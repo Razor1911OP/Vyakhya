@@ -1,0 +1,96 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "placeholder": true,
+    "source": "frontend/public/mock-metrics (sample file)",
+    "generated_at": "2026-10-25T00:00:00Z",
+    "dataset": "jobs/gen_synthetic.py (seed 42)",
+    "note": "Placeholder for UI development. Replace with the output of backend/jobs/eval.py."
+  },
+  "budget_ms": 300,
+  "p50_ms": 92,
+  "p95_ms": 168,
+  "p99_ms": 241,
+  "histogram": [
+    {
+      "start_ms": 0,
+      "end_ms": 25,
+      "count": 61
+    },
+    {
+      "start_ms": 25,
+      "end_ms": 50,
+      "count": 222
+    },
+    {
+      "start_ms": 50,
+      "end_ms": 75,
+      "count": 530
+    },
+    {
+      "start_ms": 75,
+      "end_ms": 100,
+      "count": 835
+    },
+    {
+      "start_ms": 100,
+      "end_ms": 125,
+      "count": 870
+    },
+    {
+      "start_ms": 125,
+      "end_ms": 150,
+      "count": 600
+    },
+    {
+      "start_ms": 150,
+      "end_ms": 175,
+      "count": 273
+    },
+    {
+      "start_ms": 175,
+      "end_ms": 200,
+      "count": 82
+    },
+    {
+      "start_ms": 200,
+      "end_ms": 225,
+      "count": 16
+    },
+    {
+      "start_ms": 225,
+      "end_ms": 250,
+      "count": 2
+    },
+    {
+      "start_ms": 250,
+      "end_ms": 275,
+      "count": 0
+    },
+    {
+      "start_ms": 275,
+      "end_ms": 300,
+      "count": 0
+    },
+    {
+      "start_ms": 300,
+      "end_ms": 325,
+      "count": 3
+    },
+    {
+      "start_ms": 325,
+      "end_ms": 350,
+      "count": 3
+    },
+    {
+      "start_ms": 350,
+      "end_ms": 375,
+      "count": 3
+    },
+    {
+      "start_ms": 375,
+      "end_ms": 400,
+      "count": 3
+    }
+  ]
+}

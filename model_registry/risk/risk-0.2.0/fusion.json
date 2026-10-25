@@ -1,0 +1,97 @@
+{
+  "model_version": "risk-0.2.0",
+  "shipped_system": "with_rule_score",
+  "systems": {
+    "spec_baseline": {
+      "weights": [
+        0.25,
+        0.75,
+        0.0
+      ],
+      "uses_rule_score": false,
+      "bands": {
+        "both": {
+          "medium": 62.6,
+          "high": 82.0,
+          "n_benign_validation": 1120,
+          "label": "tuned on synthetic data, re-calibrate at pilot"
+        },
+        "text": {
+          "medium": 54.9,
+          "high": 81.2,
+          "n_benign_validation": 5947,
+          "label": "tuned on synthetic data, re-calibrate at pilot"
+        },
+        "txn": {
+          "medium": 68.6,
+          "high": 94.9,
+          "n_benign_validation": 1120,
+          "label": "tuned on synthetic data, re-calibrate at pilot"
+        }
+      },
+      "bands_text_synthetic_folds": {
+        "medium": 54.9,
+        "high": 81.2,
+        "n_benign_validation": 5947
+      }
+    },
+    "with_rule_score": {
+      "weights": [
+        0.35,
+        0.25,
+        0.4
+      ],
+      "uses_rule_score": true,
+      "bands": {
+        "both": {
+          "medium": 48.8,
+          "high": 59.7,
+          "n_benign_validation": 1120,
+          "label": "tuned on synthetic data, re-calibrate at pilot"
+        },
+        "text": {
+          "medium": 37.8,
+          "high": 53.3,
+          "n_benign_validation": 5947,
+          "label": "tuned on synthetic data, re-calibrate at pilot"
+        },
+        "txn": {
+          "medium": 68.6,
+          "high": 94.9,
+          "n_benign_validation": 1120,
+          "label": "tuned on synthetic data, re-calibrate at pilot"
+        }
+      },
+      "bands_text_synthetic_folds": {
+        "medium": 37.8,
+        "high": 53.3,
+        "n_benign_validation": 5947
+      }
+    }
+  },
+  "hard_rule_floor": 90,
+  "band_policy": "medium ~5% benign FPR, high ~1% benign FPR or hard-rule hit, per signal mode, on synthetic validation folds: tuned on synthetic data, re-calibrate at pilot.",
+  "text_model_compare": {
+    "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2": "not evaluated"
+  },
+  "frozen": true,
+  "frozen_note": "Shipped and frozen 2026-10-25: no further model, rule or cutoff changes in this version.",
+  "rules_version": "v2",
+  "rules_changelog": {
+    "v1": "initial rule layer",
+    "v2": "Direction fix: '\u092a\u094d\u0930\u093e\u092a\u094d\u0924 \u0939\u0941\u090f', 'mile hain', 'credit ho jayega', 'received from' no longer count as money-in by themselves; they need the user named as recipient or a non-user sender in the same sentence. Found via a benign Hindi bill-receipt template (merchant_bill_hi_07) hitting the amount-mismatch floor; because it was found by looking at evaluation failures, the separate validation set is the cleaner check that it generalises. Measured effect on synthetic data: benign hard-floor hits 6 -> 0 (all merchant_bill_hi_07); scam hard-floor hits unchanged (231); digital_arrest_hien_01 loses reward_claim on 10 rows ('drugs mile hain' = 'drugs were found', which v1 misread as money-in)."
+  },
+  "seed": 42,
+  "trained_at": "2026-10-25T03:23:19+00:00",
+  "data": {
+    "text": "UCI SMS Spam (public, English, UK 2000s) + Vyakhya synthetic en/hi/hi-en (generator v2)",
+    "transaction": "public synthetic mobile-money data (PaySim), not UPI; sender history from Vyakhya synthetic transactions"
+  },
+  "frozen_hashes": {
+    "handwritten_test.csv": "9a1ade6b9f9b01e5b27bfe856a62d9f4dad604e919c23d3966805cf98aa1a4a9",
+    "risk/rules.py": "5e626a57a3b92c7d5e3249ed7c4ec0dc9f7a8f8b7e1092a65962f493f4070413",
+    "jobs/synthetic_templates.py": "21042c47db8ee4d8b029429dce4c39ba6db832a8e7180d072bed72dc0c699ef3"
+  },
+  "feedback_records_seen": 0,
+  "disclaimer": "All metrics come from synthetic and public datasets (UCI SMS Spam, Vyakhya synthetic messages, PaySim). They are not production accuracy."
+}

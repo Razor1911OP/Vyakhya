@@ -1,0 +1,41 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "placeholder": true,
+    "source": "frontend/public/mock-metrics (sample file)",
+    "generated_at": "2026-10-25T00:00:00Z",
+    "dataset": "jobs/gen_synthetic.py (seed 42)",
+    "note": "Placeholder for UI development. Replace with the output of backend/jobs/eval.py."
+  },
+  "models": [
+    {
+      "name": "text-primary",
+      "version": "mock-0",
+      "role": "Text classifier (HF)",
+      "created": "2026-10-25",
+      "in_use": true,
+      "notes": "Model ID to be confirmed"
+    },
+    {
+      "name": "tfidf-lr",
+      "version": "mock-0",
+      "role": "Text fallback",
+      "created": "2026-10-25",
+      "in_use": true
+    },
+    {
+      "name": "txn-xgb",
+      "version": "mock-0",
+      "role": "Transaction model (XGBoost)",
+      "created": "2026-10-25",
+      "in_use": true
+    },
+    {
+      "name": "fusion",
+      "version": "mock-0",
+      "role": "Fusion + calibration",
+      "created": "2026-10-25",
+      "in_use": true
+    }
+  ]
+}

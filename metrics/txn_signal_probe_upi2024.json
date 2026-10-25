@@ -1,0 +1,35 @@
+{
+  "files_identical_rows": true,
+  "rows": 250000,
+  "prevalence": 0.00192,
+  "single_feature_auc": {
+    "transaction_type": 0.5154,
+    "category": 0.5232,
+    "amount": 0.5001,
+    "status": 0.5029,
+    "sender_age_group": 0.5378,
+    "receiver_age_group": 0.5338,
+    "sender_state": 0.5353,
+    "sender_bank": 0.5381,
+    "receiver_bank": 0.5164,
+    "device_type": 0.5067,
+    "network_type": 0.5136,
+    "is_failed": 0.5029,
+    "hour": 0.512,
+    "day_of_week": 0.5238,
+    "is_weekend": 0.5063,
+    "month": 0.5039,
+    "is_night": 0.5116,
+    "daily_txn_count": 0.525,
+    "daily_fraud_rate": 0.73
+  },
+  "segment_fraud_rate_auc": 0.5967,
+  "xgb_time_split": {
+    "train_rows": 187746,
+    "test_rows": 62254,
+    "test_prevalence": 0.0019597134320686223,
+    "roc_auc": 0.4848,
+    "pr_auc": 0.002,
+    "recall_at_fpr_1pct": 0.0082
+  }
+}

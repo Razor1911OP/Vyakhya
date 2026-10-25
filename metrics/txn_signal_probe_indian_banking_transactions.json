@@ -1,0 +1,40 @@
+{
+  "data_source": "public (Kaggle-style) file, labels origin unknown",
+  "oof_leak_check": {
+    "customer_id": 0.5001,
+    "transaction_date": 0.507,
+    "transaction_time": 0.5037
+  },
+  "history_feature_auc": {
+    "log_amount": 0.5488,
+    "amt_z_vs_past": 0.5234,
+    "amt_minus_past_mean": 0.5311,
+    "amt_vs_past_max": 0.5273,
+    "hours_since_prev": 0.505,
+    "same_day_count": 0.5004,
+    "past_n": 0.5047,
+    "amt_to_balance": 0.5454
+  },
+  "xgb_time_split": {
+    "train_rows": 440121,
+    "test_rows": 109879,
+    "test_prevalence": 0.008946204461271035,
+    "roc_auc": 0.5309,
+    "pr_auc": 0.0136,
+    "recall_at_fpr_1pct": 0.0651,
+    "threshold_at_fpr_1pct": 0.6413453221321106,
+    "train_seconds": 10.7,
+    "top_features_by_gain": {
+      "log_amount": 696.23,
+      "transaction_amount": 654.13,
+      "merchant_category": 353.26,
+      "transaction_type": 323.31,
+      "state": 316.42,
+      "channel": 302.04,
+      "amt_to_balance": 297.74,
+      "transaction_hour": 290.96,
+      "credit_score": 288.65,
+      "amt_minus_past_mean": 287.78
+    }
+  }
+}

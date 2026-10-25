@@ -1,0 +1,39 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "placeholder": true,
+    "source": "frontend/public/mock-metrics (sample file)",
+    "generated_at": "2026-10-25T00:00:00Z",
+    "dataset": "jobs/gen_synthetic.py (seed 42)",
+    "note": "Baseline (text-only) values are from the project deck. Fused values are placeholders until eval.py runs."
+  },
+  "target": 0.8,
+  "max_fpr": 0.01,
+  "families": [
+    {
+      "family": "kyc_refund",
+      "baseline_text_only": 0.84,
+      "fused": 0.88
+    },
+    {
+      "family": "digital_arrest",
+      "baseline_text_only": 0.77,
+      "fused": 0.85
+    },
+    {
+      "family": "lottery",
+      "baseline_text_only": 0.68,
+      "fused": 0.79
+    },
+    {
+      "family": "upi_collect",
+      "baseline_text_only": 0.43,
+      "fused": 0.66
+    },
+    {
+      "family": "job_task",
+      "baseline_text_only": 0.26,
+      "fused": 0.52
+    }
+  ]
+}

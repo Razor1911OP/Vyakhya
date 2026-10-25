@@ -1,0 +1,102 @@
+{
+  "data_source": "synthetic",
+  "generator_version": "2.0.0",
+  "seed": 42,
+  "total_rows": 2120,
+  "label_counts": {
+    "0": 1120,
+    "1": 1000
+  },
+  "rows_by_family_and_language": {
+    "benign": {
+      "hi": 291,
+      "en": 428,
+      "hi-en": 401
+    },
+    "digital_arrest": {
+      "en": 81,
+      "hi": 44,
+      "hi-en": 75
+    },
+    "lottery": {
+      "en": 83,
+      "hi-en": 63,
+      "hi": 54
+    },
+    "kyc_refund": {
+      "en": 68,
+      "hi": 59,
+      "hi-en": 73
+    },
+    "upi_collect": {
+      "en": 71,
+      "hi-en": 69,
+      "hi": 60
+    },
+    "job_task": {
+      "en": 79,
+      "hi-en": 70,
+      "hi": 51
+    }
+  },
+  "templates_per_family": {
+    "benign": 123,
+    "digital_arrest": 24,
+    "lottery": 24,
+    "kyc_refund": 24,
+    "upi_collect": 24,
+    "job_task": 24
+  },
+  "signal_rates": {
+    "kyc_refund": {
+      "call_in_progress": 0.76,
+      "screen_share_active": 0.54,
+      "pasted_vpa": 0.36,
+      "new_payee": 0.91,
+      "odd_hour": 0.12
+    },
+    "digital_arrest": {
+      "call_in_progress": 0.91,
+      "screen_share_active": 0.32,
+      "pasted_vpa": 0.54,
+      "new_payee": 0.97,
+      "odd_hour": 0.07
+    },
+    "lottery": {
+      "call_in_progress": 0.32,
+      "screen_share_active": 0.06,
+      "pasted_vpa": 0.56,
+      "new_payee": 0.94,
+      "odd_hour": 0.18
+    },
+    "upi_collect": {
+      "call_in_progress": 0.59,
+      "screen_share_active": 0.07,
+      "pasted_vpa": 0.16,
+      "new_payee": 0.92,
+      "odd_hour": 0.16
+    },
+    "job_task": {
+      "call_in_progress": 0.1,
+      "screen_share_active": 0.06,
+      "pasted_vpa": 0.79,
+      "new_payee": 0.7,
+      "odd_hour": 0.33
+    },
+    "benign": {
+      "call_in_progress": 0.08,
+      "screen_share_active": 0.02,
+      "pasted_vpa": 0.16,
+      "new_payee": 0.26,
+      "odd_hour": 0.1
+    }
+  },
+  "median_amount_inr": {
+    "kyc_refund": 3902.0,
+    "digital_arrest": 77775.0,
+    "lottery": 2207.0,
+    "upi_collect": 6828.0,
+    "job_task": 2766.0,
+    "benign": 900.0
+  }
+}

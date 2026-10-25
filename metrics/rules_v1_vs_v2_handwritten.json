@@ -1,0 +1,106 @@
+{
+  "disclaimer": "All metrics come from synthetic and public datasets (UCI SMS Spam, Vyakhya synthetic messages, PaySim). They are not production accuracy.",
+  "test_set": "data/handwritten_test.csv",
+  "test_set_sha256": "9a1ade6b9f9b01e5b27bfe856a62d9f4dad604e919c23d3966805cf98aa1a4a9",
+  "cutoffs": "tuned on synthetic data, re-calibrate at pilot",
+  "note": "v2 fix was found by inspecting evaluation failures; this comparison is not a clean test of generalisation. Models and cutoffs were retrained between runs, so differences mix the rule change with retraining noise.",
+  "rules_v1": {
+    "rules_sha256": "0b87c4b90dfcb208f1386ddce0a350f88ef4e2e00760267cdf4d11c70b048bed",
+    "auc": {
+      "text only": 0.8852,
+      "rules only": 0.7806,
+      "spec_baseline": 0.886,
+      "with_rule_score": 0.915
+    },
+    "systems": {
+      "spec_baseline": {
+        "n_scam": 62,
+        "n_benign": 58,
+        "accuracy": 0.775,
+        "scam_recall": 0.7903,
+        "fpr": 0.2414,
+        "auc": 0.886,
+        "recall_at_1pct_fpr": 0.1129,
+        "high_band_recall": 0.5968,
+        "high_band_fpr": 0.1034,
+        "fpr_ci95": [
+          0.1496,
+          0.3653
+        ]
+      },
+      "with_rule_score": {
+        "n_scam": 62,
+        "n_benign": 58,
+        "accuracy": 0.825,
+        "scam_recall": 0.9032,
+        "fpr": 0.2586,
+        "auc": 0.915,
+        "recall_at_1pct_fpr": 0.4032,
+        "high_band_recall": 0.629,
+        "high_band_fpr": 0.0517,
+        "fpr_ci95": [
+          0.1635,
+          0.3838
+        ]
+      }
+    }
+  },
+  "rules_v2": {
+    "rules_sha256": "5e626a57a3b92c7d5e3249ed7c4ec0dc9f7a8f8b7e1092a65962f493f4070413",
+    "changelog": "Direction fix: '\u092a\u094d\u0930\u093e\u092a\u094d\u0924 \u0939\u0941\u090f', 'mile hain', 'credit ho jayega', 'received from' no longer count as money-in by themselves; they need the user named as recipient or a non-user sender in the same sentence. Found via a benign Hindi bill-receipt template (merchant_bill_hi_07) hitting the amount-mismatch floor; because it was found by looking at evaluation failures, the separate validation set is the cleaner check that it generalises. Measured effect on synthetic data: benign hard-floor hits 6 -> 0 (all merchant_bill_hi_07); scam hard-floor hits unchanged (231); digital_arrest_hien_01 loses reward_claim on 10 rows ('drugs mile hain' = 'drugs were found', which v1 misread as money-in).",
+    "auc": {
+      "text only": 0.8852,
+      "rules only": 0.7806,
+      "spec_baseline": 0.886,
+      "with_rule_score": 0.9116
+    },
+    "systems": {
+      "spec_baseline | synthetic-fold cutoffs": {
+        "n_scam": 62,
+        "n_benign": 58,
+        "accuracy": 0.775,
+        "scam_recall": 0.7903,
+        "fpr": 0.2414,
+        "auc": 0.886,
+        "recall_at_1pct_fpr": 0.1129,
+        "high_band_recall": 0.629,
+        "high_band_fpr": 0.1034,
+        "fpr_ci95": [
+          0.1496,
+          0.3653
+        ],
+        "high_fpr_ci95": [
+          0.0483,
+          0.2079
+        ],
+        "recall_ci95": [
+          0.6736,
+          0.8732
+        ]
+      },
+      "with_rule_score | synthetic-fold cutoffs": {
+        "n_scam": 62,
+        "n_benign": 58,
+        "accuracy": 0.8083,
+        "scam_recall": 0.8871,
+        "fpr": 0.2759,
+        "auc": 0.9116,
+        "recall_at_1pct_fpr": 0.4194,
+        "high_band_recall": 0.6129,
+        "high_band_fpr": 0.0517,
+        "fpr_ci95": [
+          0.1775,
+          0.402
+        ],
+        "high_fpr_ci95": [
+          0.0177,
+          0.1414
+        ],
+        "recall_ci95": [
+          0.7848,
+          0.9442
+        ]
+      }
+    }
+  }
+}

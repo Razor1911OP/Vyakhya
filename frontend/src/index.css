@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+fieldset {
+  min-width: 0;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-navy-950 font-sans text-sm text-ink-50 antialiased;
+    font-feature-settings: 'cv11', 'tnum';
+  }
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-teal-400;
+  }
+  h1, h2, h3 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.navy.600') transparent;
+  }
+}

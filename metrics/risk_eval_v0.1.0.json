@@ -1,0 +1,401 @@
+{
+  "disclaimer": "All metrics come from synthetic and public datasets (UCI SMS Spam, Vyakhya synthetic messages, PaySim). They are not production accuracy.",
+  "model_version": "risk-0.1.0",
+  "seed": 42,
+  "lofo": [
+    {
+      "n_scam": 140,
+      "n_benign": 1007,
+      "accuracy": 0.9451,
+      "scam_recall": 0.5643,
+      "fpr": 0.002,
+      "auc": 0.9597,
+      "recall_at_1pct_fpr": 0.6786,
+      "threshold": "per signal mode",
+      "fold": "kyc_refund",
+      "text_weight": 0.2,
+      "high_band_recall": 0.4286
+    },
+    {
+      "n_scam": 140,
+      "n_benign": 908,
+      "accuracy": 0.938,
+      "scam_recall": 0.5571,
+      "fpr": 0.0033,
+      "auc": 0.9896,
+      "recall_at_1pct_fpr": 0.6643,
+      "threshold": "per signal mode",
+      "fold": "digital_arrest",
+      "text_weight": 0.2,
+      "high_band_recall": 0.4214
+    },
+    {
+      "n_scam": 140,
+      "n_benign": 904,
+      "accuracy": 0.9176,
+      "scam_recall": 0.3929,
+      "fpr": 0.0011,
+      "auc": 0.98,
+      "recall_at_1pct_fpr": 0.6429,
+      "threshold": "per signal mode",
+      "fold": "lottery",
+      "text_weight": 0.2,
+      "high_band_recall": 0.3571
+    },
+    {
+      "n_scam": 140,
+      "n_benign": 978,
+      "accuracy": 0.9955,
+      "scam_recall": 0.9643,
+      "fpr": 0.0,
+      "auc": 0.9988,
+      "recall_at_1pct_fpr": 0.9786,
+      "threshold": "per signal mode",
+      "fold": "upi_collect",
+      "text_weight": 0.15,
+      "high_band_recall": 0.9643
+    },
+    {
+      "n_scam": 140,
+      "n_benign": 877,
+      "accuracy": 0.9056,
+      "scam_recall": 0.3714,
+      "fpr": 0.0091,
+      "auc": 0.9584,
+      "recall_at_1pct_fpr": 0.3643,
+      "threshold": "per signal mode",
+      "fold": "job_task",
+      "text_weight": 0.65,
+      "high_band_recall": 0.0571
+    },
+    {
+      "n_scam": 747,
+      "n_benign": 853,
+      "accuracy": 0.5331,
+      "scam_recall": 0.0,
+      "fpr": 0.0,
+      "auc": 0.8831,
+      "recall_at_1pct_fpr": 0.4685,
+      "threshold": "per signal mode",
+      "fold": "generic_spam",
+      "text_weight": 0.2,
+      "high_band_recall": 0.0
+    }
+  ],
+  "summary": {
+    "mean_unseen_family_recall_at_1pct_fpr": 0.6657,
+    "deck_text_only_baseline": 0.6,
+    "target": 0.8
+  },
+  "ablation": {
+    "text only": {
+      "per_fold_recall_at_1pct_fpr": {
+        "kyc_refund": 0.0857,
+        "digital_arrest": 0.2429,
+        "lottery": 0.0,
+        "upi_collect": 0.3643,
+        "job_task": 0.0,
+        "generic_spam": 0.4685
+      },
+      "mean_unseen_family_recall_at_1pct_fpr": 0.1386,
+      "synthetic_pooled_auc": 0.7171
+    },
+    "rules only": {
+      "per_fold_recall_at_1pct_fpr": {
+        "kyc_refund": 0.6857,
+        "digital_arrest": 0.25,
+        "lottery": 0.9214,
+        "upi_collect": 1.0,
+        "job_task": 0.2429,
+        "generic_spam": 0.1232
+      },
+      "mean_unseen_family_recall_at_1pct_fpr": 0.62,
+      "synthetic_pooled_auc": 0.8476
+    },
+    "transaction only": {
+      "per_fold_recall_at_1pct_fpr": {
+        "kyc_refund": 0.0,
+        "digital_arrest": 0.45,
+        "lottery": 0.1429,
+        "upi_collect": 0.5,
+        "job_task": 0.3429,
+        "generic_spam": null
+      },
+      "mean_unseen_family_recall_at_1pct_fpr": 0.2872,
+      "synthetic_pooled_auc": 0.8757
+    },
+    "text + rules": {
+      "per_fold_recall_at_1pct_fpr": {
+        "kyc_refund": 0.3429,
+        "digital_arrest": 0.2429,
+        "lottery": 0.0,
+        "upi_collect": 0.9786,
+        "job_task": 0.0,
+        "generic_spam": 0.4685
+      },
+      "mean_unseen_family_recall_at_1pct_fpr": 0.3129,
+      "synthetic_pooled_auc": 0.802
+    },
+    "all combined": {
+      "per_fold_recall_at_1pct_fpr": {
+        "kyc_refund": 0.6786,
+        "digital_arrest": 0.6643,
+        "lottery": 0.6429,
+        "upi_collect": 0.9786,
+        "job_task": 0.3643,
+        "generic_spam": 0.4685
+      },
+      "mean_unseen_family_recall_at_1pct_fpr": 0.6657,
+      "synthetic_pooled_auc": 0.902
+    }
+  },
+  "hard_negatives": {
+    "OTP notices": {
+      "n": 100,
+      "fpr_flagged": 0.02,
+      "rate_high_band": 0.01,
+      "hard_floor_hits": 0,
+      "text_only_fpr_at_0_5": 0.3
+    },
+    "Debit/credit alerts": {
+      "n": 73,
+      "fpr_flagged": 0.0548,
+      "rate_high_band": 0.0137,
+      "hard_floor_hits": 0,
+      "text_only_fpr_at_0_5": 0.9315
+    },
+    "Genuine KYC reminders": {
+      "n": 27,
+      "fpr_flagged": 0.0,
+      "rate_high_band": 0.0,
+      "hard_floor_hits": 0,
+      "text_only_fpr_at_0_5": 0.0
+    },
+    "Bill reminders / receipts": {
+      "n": 100,
+      "fpr_flagged": 0.03,
+      "rate_high_band": 0.02,
+      "hard_floor_hits": 0,
+      "text_only_fpr_at_0_5": 0.71
+    },
+    "Genuine refunds": {
+      "n": 100,
+      "fpr_flagged": 0.0,
+      "rate_high_band": 0.0,
+      "hard_floor_hits": 0,
+      "text_only_fpr_at_0_5": 0.5
+    },
+    "UCI everyday SMS (ham)": {
+      "n": 4827,
+      "fpr_flagged": 0.0002,
+      "rate_high_band": 0.0,
+      "hard_floor_hits": 0,
+      "text_only_fpr_at_0_5": 0.0066
+    }
+  },
+  "rule_flag_rates": {
+    "scam_synthetic": {
+      "asks_otp": 0.051,
+      "otp_notice": 0.0,
+      "asks_pin": 0.127,
+      "collect_approval": 0.2,
+      "reward_claim": 0.487,
+      "fee_to_claim": 0.219,
+      "urgency": 0.381,
+      "has_link": 0.14,
+      "amount_mismatch": 0.227,
+      "hard_floor_90": 0.237
+    },
+    "benign_synthetic": {
+      "asks_otp": 0.0,
+      "otp_notice": 0.16,
+      "asks_pin": 0.0,
+      "collect_approval": 0.0,
+      "reward_claim": 0.143,
+      "fee_to_claim": 0.0,
+      "urgency": 0.123,
+      "has_link": 0.04,
+      "amount_mismatch": 0.0,
+      "hard_floor_90": 0.0
+    },
+    "uci_spam": {
+      "asks_otp": 0.0,
+      "otp_notice": 0.0,
+      "asks_pin": 0.0,
+      "collect_approval": 0.0,
+      "reward_claim": 0.185,
+      "fee_to_claim": 0.001,
+      "urgency": 0.369,
+      "has_link": 0.185,
+      "amount_mismatch": 0.0,
+      "hard_floor_90": 0.0
+    },
+    "uci_ham": {
+      "asks_otp": 0.0,
+      "otp_notice": 0.001,
+      "asks_pin": 0.0,
+      "collect_approval": 0.0,
+      "reward_claim": 0.006,
+      "fee_to_claim": 0.0,
+      "urgency": 0.102,
+      "has_link": 0.003,
+      "amount_mismatch": 0.0,
+      "hard_floor_90": 0.0
+    }
+  },
+  "paysim_model": {
+    "data": "public synthetic mobile-money data (PaySim), not UPI",
+    "features": [
+      "amount",
+      "type",
+      "hour",
+      "beneficiary_prior_txns",
+      "beneficiary_first_seen"
+    ],
+    "split": "fit step<400, calibrate 400-499, test step>=500",
+    "rows": {
+      "fit": 2515139,
+      "calibrate": 128034,
+      "test": 127220
+    },
+    "prevalence": {
+      "fit": 0.0017720690586086891,
+      "test": 0.02079861656972174
+    },
+    "test_roc_auc": 0.9298,
+    "test_pr_auc": 0.6162,
+    "test_recall_at_1pct_fpr": 0.5831,
+    "test_recall_at_0_1pct_fpr": 0.3553
+  },
+  "fusion_shipped": {
+    "model_version": "risk-0.1.0",
+    "text_weight": 0.2,
+    "bands": {
+      "both": {
+        "medium": 88.8,
+        "high": 90.0
+      },
+      "text": {
+        "medium": 82.5,
+        "high": 89.2
+      },
+      "txn": {
+        "medium": 90.0,
+        "high": 90.0
+      }
+    },
+    "hard_rule_floor": 90,
+    "seed": 42,
+    "trained_at": "2026-10-25T02:00:39+00:00",
+    "data": {
+      "text": "UCI SMS Spam (public, English, UK 2000s) + Vyakhya synthetic en/hi/hi-en",
+      "transaction": "public synthetic mobile-money data (PaySim), not UPI; sender history from Vyakhya synthetic transactions"
+    },
+    "feedback_records_seen": 0,
+    "disclaimer": "All metrics come from synthetic and public datasets (UCI SMS Spam, Vyakhya synthetic messages, PaySim). They are not production accuracy."
+  },
+  "fold_params": {
+    "kyc_refund": {
+      "text_weight": 0.2,
+      "bands": {
+        "both": {
+          "medium": 85.1,
+          "high": 90.0
+        },
+        "text": {
+          "medium": 86.5,
+          "high": 89.2
+        },
+        "txn": {
+          "medium": 90.0,
+          "high": 90.0
+        }
+      }
+    },
+    "digital_arrest": {
+      "text_weight": 0.2,
+      "bands": {
+        "both": {
+          "medium": 84.0,
+          "high": 90.0
+        },
+        "text": {
+          "medium": 82.5,
+          "high": 89.2
+        },
+        "txn": {
+          "medium": 90.0,
+          "high": 90.0
+        }
+      }
+    },
+    "lottery": {
+      "text_weight": 0.2,
+      "bands": {
+        "both": {
+          "medium": 88.8,
+          "high": 90.0
+        },
+        "text": {
+          "medium": 86.5,
+          "high": 89.2
+        },
+        "txn": {
+          "medium": 90.0,
+          "high": 90.0
+        }
+      }
+    },
+    "upi_collect": {
+      "text_weight": 0.15,
+      "bands": {
+        "both": {
+          "medium": 90.0,
+          "high": 90.0
+        },
+        "text": {
+          "medium": 85.3,
+          "high": 89.2
+        },
+        "txn": {
+          "medium": 90.0,
+          "high": 90.0
+        }
+      }
+    },
+    "job_task": {
+      "text_weight": 0.65,
+      "bands": {
+        "both": {
+          "medium": 75.5,
+          "high": 90.0
+        },
+        "text": {
+          "medium": 76.7,
+          "high": 86.6
+        },
+        "txn": {
+          "medium": 90.0,
+          "high": 90.0
+        }
+      }
+    },
+    "generic_spam": {
+      "text_weight": 0.2,
+      "bands": {
+        "both": {
+          "medium": 88.8,
+          "high": 90.0
+        },
+        "text": {
+          "medium": 86.5,
+          "high": 89.2
+        },
+        "txn": {
+          "medium": 90.0,
+          "high": 90.0
+        }
+      }
+    }
+  }
+}

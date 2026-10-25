@@ -1,0 +1,413 @@
+{
+  "file": "indian_banking_transactions.csv",
+  "rows": 550000,
+  "fraud_rows": 4873,
+  "prevalence": 0.00886,
+  "columns": {
+    "customer_id": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 79916,
+      "auc": 0.9769
+    },
+    "transaction_date": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 1827,
+      "auc": 0.6736
+    },
+    "transaction_time": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 1440,
+      "auc": 0.6527
+    },
+    "account_type": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 5,
+      "auc": 0.5072
+    },
+    "transaction_type": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 10,
+      "auc": 0.5506
+    },
+    "transaction_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "unique": 374552,
+      "auc": 0.5488
+    },
+    "transaction_direction": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 2,
+      "auc": 0.5057
+    },
+    "account_balance": {
+      "dtype": "float64",
+      "nulls": 0,
+      "unique": 536170,
+      "auc": 0.5023
+    },
+    "merchant_category": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 15,
+      "auc": 0.511
+    },
+    "state": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 10,
+      "auc": 0.5119
+    },
+    "credit_score": {
+      "dtype": "int64",
+      "nulls": 0,
+      "unique": 600,
+      "auc": 0.5006
+    },
+    "has_loan": {
+      "dtype": "int64",
+      "nulls": 0,
+      "unique": 2,
+      "auc": 0.5024
+    },
+    "loan_type": {
+      "dtype": "object",
+      "nulls": 377134,
+      "unique": 6,
+      "auc": 0.506
+    },
+    "emi_amount": {
+      "dtype": "float64",
+      "nulls": 0,
+      "unique": 177524,
+      "auc": 0.5025
+    },
+    "transaction_status": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 4,
+      "auc": 0.5021
+    },
+    "channel": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 6,
+      "auc": 0.5085
+    },
+    "kyc_status": {
+      "dtype": "object",
+      "nulls": 0,
+      "unique": 3,
+      "auc": 0.5011
+    },
+    "transaction_hour": {
+      "dtype": "int64",
+      "nulls": 0,
+      "unique": 24,
+      "auc": 0.5008
+    }
+  },
+  "date_range": [
+    "2019-01-01",
+    "2024-01-01"
+  ],
+  "customers": 79916,
+  "fraud_rate_by_category": {
+    "account_type": {
+      "Savings": [
+        0.00911,
+        219651
+      ],
+      "NRI": [
+        0.00892,
+        43746
+      ],
+      "Fixed Deposit": [
+        0.00885,
+        38888
+      ],
+      "Current": [
+        0.00869,
+        137648
+      ],
+      "Salary": [
+        0.00855,
+        110067
+      ]
+    },
+    "transaction_type": {
+      "RTGS": [
+        0.01854,
+        32964
+      ],
+      "Cheque": [
+        0.01179,
+        21711
+      ],
+      "NEFT": [
+        0.00872,
+        66615
+      ],
+      "Credit_Card": [
+        0.00852,
+        16426
+      ],
+      "Net_Banking": [
+        0.00848,
+        38458
+      ],
+      "ATM_Withdrawal": [
+        0.00827,
+        55106
+      ],
+      "IMPS": [
+        0.0081,
+        77038
+      ],
+      "POS": [
+        0.00798,
+        60278
+      ],
+      "UPI": [
+        0.00786,
+        153986
+      ],
+      "Auto_Debit": [
+        0.00682,
+        27418
+      ]
+    },
+    "transaction_direction": {
+      "Credit": [
+        0.00916,
+        179606
+      ],
+      "Debit": [
+        0.00871,
+        370394
+      ]
+    },
+    "merchant_category": {
+      "Peer Transfer": [
+        0.00934,
+        38753
+      ],
+      "Investment": [
+        0.0092,
+        27380
+      ],
+      "E-Commerce": [
+        0.00917,
+        54767
+      ],
+      "Fuel": [
+        0.00917,
+        21929
+      ],
+      "Entertainment": [
+        0.00909,
+        32997
+      ],
+      "Healthcare": [
+        0.00909,
+        33015
+      ],
+      "Salary": [
+        0.00901,
+        43937
+      ],
+      "Retail": [
+        0.00898,
+        66180
+      ],
+      "Travel": [
+        0.00878,
+        44177
+      ],
+      "Insurance": [
+        0.00867,
+        22020
+      ],
+      "Education": [
+        0.00863,
+        27359
+      ],
+      "Real Estate": [
+        0.0086,
+        16627
+      ],
+      "Food & Dining": [
+        0.0086,
+        54776
+      ],
+      "Utilities": [
+        0.00837,
+        38575
+      ],
+      "Government": [
+        0.00778,
+        27508
+      ]
+    },
+    "state": {
+      "UP": [
+        0.00948,
+        27414
+      ],
+      "West Bengal": [
+        0.0094,
+        43950
+      ],
+      "Karnataka": [
+        0.00914,
+        76659
+      ],
+      "Maharashtra": [
+        0.00895,
+        98911
+      ],
+      "Delhi": [
+        0.00889,
+        66114
+      ],
+      "Telangana": [
+        0.00887,
+        49610
+      ],
+      "Tamil Nadu": [
+        0.00882,
+        71747
+      ],
+      "Gujarat": [
+        0.0088,
+        54798
+      ],
+      "Rajasthan": [
+        0.00782,
+        38725
+      ],
+      "Punjab": [
+        0.00761,
+        22072
+      ]
+    },
+    "loan_type": {
+      "Gold": [
+        0.01005,
+        9648
+      ],
+      "Business": [
+        0.00949,
+        28863
+      ],
+      "Auto": [
+        0.009,
+        29219
+      ],
+      "Home": [
+        0.00886,
+        38252
+      ],
+      "Education": [
+        0.00876,
+        19074
+      ],
+      "Personal": [
+        0.0083,
+        47810
+      ]
+    },
+    "transaction_status": {
+      "Pending": [
+        0.00951,
+        10829
+      ],
+      "Failed": [
+        0.00936,
+        21905
+      ],
+      "Reversed": [
+        0.00908,
+        11019
+      ],
+      "Success": [
+        0.00882,
+        506247
+      ]
+    },
+    "channel": {
+      "Branch": [
+        0.00946,
+        54957
+      ],
+      "POS_Terminal": [
+        0.00915,
+        60853
+      ],
+      "API": [
+        0.00896,
+        38635
+      ],
+      "Web": [
+        0.00892,
+        121010
+      ],
+      "Mobile_App": [
+        0.00868,
+        208368
+      ],
+      "ATM": [
+        0.00848,
+        66177
+      ]
+    },
+    "kyc_status": {
+      "Verified": [
+        0.00888,
+        483457
+      ],
+      "Pending": [
+        0.00885,
+        44288
+      ],
+      "Expired": [
+        0.00845,
+        22255
+      ]
+    }
+  },
+  "amount_quantiles": {
+    "fraud": [
+      346.96,
+      2691.95,
+      505554.1,
+      1735555.54
+    ],
+    "legit": [
+      317.51,
+      2030.99,
+      50604.69,
+      505264.13
+    ],
+    "q": [
+      0.1,
+      0.5,
+      0.9,
+      0.99
+    ]
+  },
+  "vyakhya_features_derivable": {
+    "amount": true,
+    "hour / odd_hour": true,
+    "amount_vs_history_percentile": true,
+    "txn_count_last_hour / last_day": true,
+    "new_payee / fan_out_count": false,
+    "beneficiary_age": false
+  }
+}

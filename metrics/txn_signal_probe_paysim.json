@@ -1,0 +1,104 @@
+{
+  "data_source": "PaySim (public synthetic mobile-money simulator, Kaggle ealaxi/paysim1)",
+  "rows": 6362620,
+  "prevalence": 0.001290820448180152,
+  "modelling_subset": "TRANSFER+CASH_OUT, isFlaggedFraud dropped",
+  "split": "step < 500 train",
+  "single_feature_auc": {
+    "amount": 0.6828,
+    "oldbalanceOrg": 0.9275,
+    "drain_ratio": 0.8995,
+    "empties_account": 0.7751,
+    "errorBalanceOrig": 0.9485,
+    "errorBalanceDest": 0.7481,
+    "dest_bal_zero_both": 0.7473,
+    "newbalanceOrig": 0.5399,
+    "oldbalanceDest": 0.7856,
+    "dest_prior_txns": 0.7682,
+    "dest_first_seen": 0.7447,
+    "hour": 0.6589
+  },
+  "artefact_rates": {
+    "fraud_empties_account": 0.97743076735391,
+    "legit_empties_account": 0.42721950216422006,
+    "fraud_dest_bal_zero_both": 0.49530315969257044,
+    "legit_dest_bal_zero_both": 0.0006176245277308345
+  },
+  "models": {
+    "M1_all_incl_balances": {
+      "features": [
+        "type",
+        "log_amount",
+        "hour",
+        "oldbalanceOrg",
+        "newbalanceOrig",
+        "oldbalanceDest",
+        "newbalanceDest",
+        "errorBalanceOrig",
+        "errorBalanceDest",
+        "dest_prior_txns",
+        "dest_first_seen",
+        "dest_prior_amount_sum"
+      ],
+      "roc_auc": 1.0,
+      "pr_auc": 0.9991,
+      "recall_at_fpr_1pct": 1.0,
+      "recall_at_fpr_0_1pct": 0.9996,
+      "train_seconds": 26.7,
+      "top_features_by_gain": {
+        "errorBalanceOrig": 18982.4,
+        "newbalanceOrig": 12398.3,
+        "oldbalanceOrg": 4272.6,
+        "newbalanceDest": 1718.9,
+        "log_amount": 1615.9
+      }
+    },
+    "M2_pre_debit_sender": {
+      "features": [
+        "type",
+        "log_amount",
+        "hour",
+        "oldbalanceOrg",
+        "drain_ratio",
+        "empties_account",
+        "dest_prior_txns",
+        "dest_first_seen",
+        "dest_prior_amount_sum"
+      ],
+      "roc_auc": 0.9999,
+      "pr_auc": 0.9964,
+      "recall_at_fpr_1pct": 1.0,
+      "recall_at_fpr_0_1pct": 0.9853,
+      "train_seconds": 24.2,
+      "top_features_by_gain": {
+        "empties_account": 23741.8,
+        "drain_ratio": 15142.4,
+        "oldbalanceOrg": 2711.1,
+        "log_amount": 1016.4,
+        "type": 902.9
+      }
+    },
+    "M3_behaviour_only": {
+      "features": [
+        "type",
+        "log_amount",
+        "hour",
+        "dest_prior_txns",
+        "dest_first_seen",
+        "dest_prior_amount_sum"
+      ],
+      "roc_auc": 0.9343,
+      "pr_auc": 0.6269,
+      "recall_at_fpr_1pct": 0.5971,
+      "recall_at_fpr_0_1pct": 0.3636,
+      "train_seconds": 58.7,
+      "top_features_by_gain": {
+        "dest_first_seen": 9401.9,
+        "type": 7772.1,
+        "dest_prior_txns": 1885.1,
+        "hour": 1694.4,
+        "log_amount": 1603.7
+      }
+    }
+  }
+}

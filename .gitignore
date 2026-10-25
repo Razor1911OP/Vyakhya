@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Secrets (never commit these)
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Test and cache output
+coverage/
+.cache/

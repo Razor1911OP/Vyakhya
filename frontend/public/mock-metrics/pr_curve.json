@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "synthetic": true,
+    "placeholder": true,
+    "source": "frontend/public/mock-metrics (sample file)",
+    "generated_at": "2026-10-25T00:00:00Z",
+    "dataset": "jobs/gen_synthetic.py (seed 42)",
+    "note": "Placeholder for UI development. Replace with the output of backend/jobs/eval.py."
+  },
+  "prevalence": "1:1000",
+  "reweighted": true,
+  "points": [
+    {
+      "recall": 0.0,
+      "precision": 1.0
+    },
+    {
+      "recall": 0.05,
+      "precision": 0.997
+    },
+    {
+      "recall": 0.1,
+      "precision": 0.994
+    },
+    {
+      "recall": 0.15,
+      "precision": 0.99
+    },
+    {
+      "recall": 0.2,
+      "precision": 0.984
+    },
+    {
+      "recall": 0.25,
+      "precision": 0.976
+    },
+    {
+      "recall": 0.3,
+      "precision": 0.965
+    },
+    {
+      "recall": 0.35,
+      "precision": 0.95
+    },
+    {
+      "recall": 0.4,
+      "precision": 0.932
+    },
+    {
+      "recall": 0.45,
+      "precision": 0.909
+    },
+    {
+      "recall": 0.5,
+      "precision": 0.881
+    },
+    {
+      "recall": 0.55,
+      "precision": 0.848
+    },
+    {
+      "recall": 0.6,
+      "precision": 0.808
+    },
+    {
+      "recall": 0.65,
+      "precision": 0.762
+    },
+    {
+      "recall": 0.7,
+      "precision": 0.708
+    },
+    {
+      "recall": 0.75,
+      "precision": 0.646
+    },
+    {
+      "recall": 0.8,
+      "precision": 0.576
+    },
+    {
+      "recall": 0.85,
+      "precision": 0.497
+    },
+    {
+      "recall": 0.9,
+      "precision": 0.408
+    },
+    {
+      "recall": 0.95,
+      "precision": 0.309
+    },
+    {
+      "recall": 1.0,
+      "precision": 0.2
+    }
+  ],
+  "cutoffs": [
+    {
+      "tier": "MEDIUM",
+      "r": 40,
+      "recall": 0.9,
+      "precision": 0.44
+    },
+    {
+      "tier": "HIGH",
+      "r": 70,
+      "recall": 0.75,
+      "precision": 0.68
+    },
+    {
+      "tier": "CRITICAL",
+      "r": 85,
+      "recall": 0.55,
+      "precision": 0.9
+    }
+  ]
+}
