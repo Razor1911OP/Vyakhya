@@ -7,21 +7,38 @@
  *   3. ask the Flask scoring service for a risk score R (3 s timeout)
  *      -> on any failure: tier MEDIUM, reason SCORING_UNAVAILABLE
  *   4. tier policy: LOW <40, MEDIUM 40-69, HIGH 70-84, CRITICAL >=85
- *   5. save event (redacted text only), open a case if HIGH+, hold if CRITICAL
+ *   5. save event (redacted text only). MEDIUM, HIGH and CRITICAL open a case
+ *      and put the payment on a soft hold for HOLD_SECONDS (env, default 60).
  *   6. append an audit record (every call, success or not)
+ *
+ * Hold life cycle (one case per held payment)
+ *
+ *              appeal + confirm         hold expires          analyst
+ *   MEDIUM/HIGH  held -> released        held -> released      held -> released|blocked
+ *   CRITICAL     held -> escalated       held -> escalated     held|escalated -> released|blocked
+ *
+ *   A CRITICAL hold is NEVER released automatically. A verified call-back or
+ *   the expiry only moves it to the analyst queue (status "escalated");
+ *   only an analyst release/block closes it.
+ *
+ *   Appeal = mock verified call-back, two steps (user role):
+ *     POST /cases/:id/appeal          -> "we are calling you", returns callback_id
+ *     POST /cases/:id/appeal/confirm  -> the call verified the payer
+ *   In a real system the confirm would come from the bank's call system, not
+ *   the payer's app; here the demo UI plays that part.
+ *
+ *   Every close (release/block) stores and audits seconds_held = hold -> close.
  *
  * Collections
  *   events : one per /score call. Stores REDACTED text only, never raw.
- *   cases  : HIGH/CRITICAL events waiting for an analyst decision.
- *            Life cycle: open -> released | blocked; blocked -> appealed
- *            (user appeal) -> released | blocked (analyst re-decides).
+ *   cases  : one per held payment (see life cycle above).
  *   audit  : append-only log. No update/delete routes, and the model itself
  *            refuses updates and deletes (see auditSchema hooks).
  *
  * Auth: POST /login gives a signed token with role "user" or "analyst".
- *   POST /score, GET /health          -> public, no login
+ *   POST /score, GET /health                        -> public, no login
  *   GET /cases, POST /cases/:id/decision, GET /audit -> analyst only
- *   POST /cases/:id/appeal             -> user only (the user role's only power)
+ *   POST /cases/:id/appeal, .../appeal/confirm       -> user only
  */
 
 'use strict';
@@ -41,6 +58,17 @@ const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/vyakhya';
 const SCORING_URL = process.env.SCORING_URL || 'http://127.0.0.1:8000/predict';
 const SCORING_TIMEOUT_MS = 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
+
+// How long a soft hold lasts before it expires (60 in the demo).
+const HOLD_SECONDS = Number(process.env.HOLD_SECONDS) > 0 ? Number(process.env.HOLD_SECONDS) : 60;
+// How often the expiry sweep looks for expired holds.
+const EXPIRY_SWEEP_MS = 1000;
+
+// All "now" reads go through here, so tests can move time forward.
+const clock = { now: () => new Date() };
+
+/** Seconds between two dates, 1 decimal. */
+const secondsBetween = (from, to) => Math.round((to - from) / 100) / 10;
 
 // Token signing secret. If not set we make a random one, so tokens simply
 // stop working after a restart (fine for a demo, set JWT_SECRET for real use).
@@ -191,7 +219,11 @@ const eventSchema = new mongoose.Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: false }, versionKey: false }
 );
 
-const CASE_STATUSES = ['open', 'released', 'blocked', 'appealed'];
+// held      : payment paused, waiting for call-back, expiry or analyst
+// escalated : CRITICAL only, in the analyst queue, still held
+// released / blocked : closed
+const CASE_STATUSES = ['held', 'escalated', 'released', 'blocked'];
+const OPEN_STATUSES = ['held', 'escalated'];
 
 const caseSchema = new mongoose.Schema(
   {
@@ -201,21 +233,36 @@ const caseSchema = new mongoose.Schema(
     tier: String,
     reasons: [String],
     why: [String],
-    hold: Boolean,
+    hold: Boolean, // true until the case is released or blocked
     payment: paymentShape,
     redacted_text: String,
-    status: { type: String, enum: CASE_STATUSES, default: 'open' },
-    decided_by: String,
-    decided_at: Date,
-    // Filled when the payer appeals a block. reason is REDACTED text.
-    appeal: { reason: String, by: String, at: Date },
+    status: { type: String, enum: CASE_STATUSES, default: 'held' },
+    held_at: Date,
+    hold_expires_at: Date,
+    // Mock verified call-back. reason is REDACTED text.
+    callback: { id: String, reason: String, started_at: Date, confirmed_at: Date },
+    escalated_at: Date,
+    escalated_via: { type: String, enum: ['callback', 'expiry'] },
+    closed_at: Date,
+    closed_via: { type: String, enum: ['callback', 'expiry', 'analyst'] },
+    seconds_held: Number, // held_at -> closed_at
+    decided_by: String, // analyst username, when an analyst closed it
   },
   { timestamps: { createdAt: 'created_at', updatedAt: false }, versionKey: false }
 );
+// The expiry sweep looks up "held and past hold_expires_at".
+caseSchema.index({ status: 1, hold_expires_at: 1 });
 
 const auditSchema = new mongoose.Schema(
   {
-    action: { type: String, enum: ['score', 'decision', 'appeal'], required: true },
+    // score     : a /score call
+    // appeal    : payer started a call-back
+    // release   : hold released by call-back or expiry (MEDIUM/HIGH)
+    // escalate  : CRITICAL sent to the analyst queue by call-back or expiry
+    // decision  : analyst release/block
+    action: { type: String, enum: ['score', 'appeal', 'release', 'escalate', 'decision'], required: true },
+    via: String, // callback | expiry | analyst
+    seconds_held: Number, // on every release/block
     actor: { username: String, role: String },
     session_id: String,
     event_id: mongoose.Schema.Types.ObjectId,
@@ -248,6 +295,87 @@ auditSchema.pre('save', function () {
 const Event = mongoose.models.Event || mongoose.model('Event', eventSchema, 'events');
 const Case = mongoose.models.Case || mongoose.model('Case', caseSchema, 'cases');
 const Audit = mongoose.models.Audit || mongoose.model('Audit', auditSchema, 'audit');
+
+// ---------------------------------------------------------------------------
+// Hold handling (shared by call-back confirm and the expiry sweep)
+// ---------------------------------------------------------------------------
+const SYSTEM_ACTOR = { username: null, role: 'system' };
+
+/** Append an audit record about a case. */
+function auditCase(action, c, actor, extra = {}) {
+  return Audit.create({
+    action, actor, session_id: c.session_id, event_id: c.event_id, case_id: c._id,
+    R: c.R, tier: c.tier, hold: c.hold, ...extra,
+  });
+}
+
+/**
+ * End the "held" stage of a case, because of a verified call-back or expiry.
+ *   MEDIUM / HIGH -> released (hold off), seconds_held recorded
+ *   CRITICAL      -> escalated to the analyst queue, hold stays ON
+ *
+ * Atomic: only succeeds if the case is still "held" (plus any extra filter),
+ * so a call-back and the expiry can never both act on the same case.
+ * Returns the updated case, or null if something else got there first.
+ */
+async function resolveHold(c, via, actor, { filter = {}, set = {} } = {}) {
+  const now = clock.now();
+  const where = { _id: c._id, status: 'held', ...filter };
+
+  if (c.tier === 'CRITICAL') {
+    const updated = await Case.findOneAndUpdate(
+      where,
+      { ...set, status: 'escalated', escalated_at: now, escalated_via: via },
+      { returnDocument: 'after' }
+    ).lean();
+    if (updated) await auditCase('escalate', updated, actor, { via });
+    return updated;
+  }
+
+  const seconds_held = secondsBetween(c.held_at, now);
+  const updated = await Case.findOneAndUpdate(
+    where,
+    { ...set, status: 'released', hold: false, closed_at: now, closed_via: via, seconds_held },
+    { returnDocument: 'after' }
+  ).lean();
+  if (updated) await auditCase('release', updated, actor, { via, seconds_held });
+  return updated;
+}
+
+/**
+ * Expiry sweep: every held case past hold_expires_at is resolved
+ * (MEDIUM/HIGH released, CRITICAL escalated). Safe to run any time.
+ */
+async function expireHolds() {
+  const due = await Case.find({ status: 'held', hold_expires_at: { $lte: clock.now() } }).lean();
+  const result = { released: 0, escalated: 0 };
+  for (const c of due) {
+    const updated = await resolveHold(c, 'expiry', SYSTEM_ACTOR);
+    if (updated) result[updated.status] += 1;
+  }
+  return result;
+}
+
+/**
+ * Run expireHolds() every intervalMs. Deadlines live in Mongo, so a restart
+ * just picks up where it left off. Returns the timer (clearInterval to stop).
+ */
+function startHoldExpiry(intervalMs = EXPIRY_SWEEP_MS) {
+  let running = false; // skip a tick if the previous sweep is still going
+  const timer = setInterval(async () => {
+    if (running) return;
+    running = true;
+    try {
+      await expireHolds();
+    } catch (err) {
+      console.error('[expiry] sweep failed:', err.message);
+    } finally {
+      running = false;
+    }
+  }, intervalMs);
+  timer.unref(); // don't keep the process alive just for this
+  return timer;
+}
 
 // ---------------------------------------------------------------------------
 // Auth
@@ -334,8 +462,8 @@ function createApp() {
       console.warn(`[score] scoring unavailable: ${err.message}`); // no request text in logs
     }
 
-    // 4-5. Policy: hold only on CRITICAL, case on HIGH or CRITICAL.
-    const hold = tier === 'CRITICAL';
+    // 4-5. Policy: everything except LOW gets a case and a soft hold.
+    const hold = tier !== 'LOW';
     const why = explain(reasons);
 
     const event = await Event.create({
@@ -344,10 +472,14 @@ function createApp() {
     });
 
     let caseDoc = null;
-    if (tier === 'HIGH' || tier === 'CRITICAL') {
+    if (hold) {
+      const heldAt = clock.now();
       caseDoc = await Case.create({
         event_id: event._id, session_id, R, tier, reasons, why, hold,
         payment, redacted_text: redacted,
+        status: 'held',
+        held_at: heldAt,
+        hold_expires_at: new Date(heldAt.getTime() + HOLD_SECONDS * 1000),
       });
     }
 
@@ -358,14 +490,19 @@ function createApp() {
       R, tier, hold, reasons, scoring_ok: scoringOk, redaction_counts: counts,
     });
 
-    res.json({ R, tier, reasons, why, hold, case_id: caseDoc ? String(caseDoc._id) : null });
+    res.json({
+      R, tier, reasons, why, hold,
+      case_id: caseDoc ? String(caseDoc._id) : null,
+      hold_expires_at: caseDoc ? caseDoc.hold_expires_at : null, // for the UI countdown
+    });
   });
 
   // --- cases (analyst only) ---
   app.get('/cases', requireRole('analyst'), async (req, res) => {
     const filter = {};
     if (CASE_STATUSES.includes(req.query.status)) filter.status = req.query.status;
-    const cases = await Case.find(filter).sort({ R: -1, created_at: -1 }).limit(200).lean();
+    // callback.id is the payer's one-time call-back code: never shown to analysts.
+    const cases = await Case.find(filter).select('-callback.id').sort({ R: -1, created_at: -1 }).limit(200).lean();
     res.json(cases);
   });
 
@@ -376,76 +513,112 @@ function createApp() {
     }
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ error: 'bad case id' });
 
-    // Atomic: only an OPEN or APPEALED case can be decided, so two analysts
-    // can't both decide it.
+    // Atomic: only a HELD or ESCALATED case can be decided, so two analysts
+    // (or an analyst and the expiry sweep) can't both close it.
+    const current = await Case.findById(req.params.id).lean();
+    if (!current) return res.status(404).json({ error: 'case not found' });
+
+    const now = clock.now();
+    const seconds_held = secondsBetween(current.held_at, now);
     const updated = await Case.findOneAndUpdate(
-      { _id: req.params.id, status: { $in: ['open', 'appealed'] } },
+      { _id: current._id, status: { $in: OPEN_STATUSES } },
       {
         status: decision === 'release' ? 'released' : 'blocked',
+        hold: false,
+        closed_at: now,
+        closed_via: 'analyst',
+        seconds_held,
         decided_by: req.user.username,
-        decided_at: new Date(),
       },
       { returnDocument: 'after' }
-    ).lean();
+    ).select('-callback.id').lean();
 
-    if (!updated) {
-      const exists = await Case.exists({ _id: req.params.id });
-      return exists
-        ? res.status(409).json({ error: 'case already decided' })
-        : res.status(404).json({ error: 'case not found' });
-    }
+    if (!updated) return res.status(409).json({ error: `case already closed (${current.status})` });
 
-    await Audit.create({
-      action: 'decision', actor: req.user, session_id: updated.session_id,
-      event_id: updated.event_id, case_id: updated._id,
-      R: updated.R, tier: updated.tier, hold: updated.hold, decision,
-    });
-
+    await auditCase('decision', updated, req.user, { decision, via: 'analyst', seconds_held });
     res.json(updated);
   });
 
-  // --- appeal (user only) ---
-  // The payer asks for a blocked payment to be reviewed again.
-  // body: { session_id, reason? }. session_id must match the case, so a user
-  // can only appeal a case from their own payment session.
-  app.post('/cases/:id/appeal', requireRole('user'), async (req, res) => {
-    const { session_id, reason = '' } = req.body || {};
+  // --- appeal = mock verified call-back (user only) ---
+  // Both steps need the case's session_id, so a payer can only appeal their own
+  // payment. "not found" and "not your session" give the same 404 (no probing).
+  const findOwnCase = async (req, res) => {
+    const { session_id } = req.body || {};
     if (typeof session_id !== 'string' || !session_id) {
-      return res.status(400).json({ error: 'session_id is required' });
+      res.status(400).json({ error: 'session_id is required' });
+      return null;
     }
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      res.status(400).json({ error: 'bad case id' });
+      return null;
+    }
+    const c = await Case.findOne({ _id: req.params.id, session_id }).lean();
+    if (!c) {
+      res.status(404).json({ error: 'case not found' });
+      return null;
+    }
+    if (c.status !== 'held') {
+      res.status(409).json({ error: `case is not on hold (${c.status})`, status: c.status });
+      return null;
+    }
+    return c;
+  };
+
+  // Step 1: start the call-back. body: { session_id, reason? }
+  app.post('/cases/:id/appeal', requireRole('user'), async (req, res) => {
+    const { reason = '' } = req.body || {};
     if (typeof reason !== 'string' || reason.length > 1000) {
       return res.status(400).json({ error: 'reason must be a string of at most 1000 chars' });
     }
-    if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ error: 'bad case id' });
+    const c = await findOwnCase(req, res);
+    if (!c) return;
 
-    // The reason is free text, so redact it before it is stored.
-    const { redacted } = redact(reason);
-
-    // Atomic: only a BLOCKED case of this session can be appealed, and only once
-    // (appealed -> re-decided cases can't be appealed a second time).
+    const callbackId = crypto.randomUUID();
+    // Atomic: only one call-back per case.
     const updated = await Case.findOneAndUpdate(
-      { _id: req.params.id, session_id, status: 'blocked', appeal: { $exists: false } },
-      {
-        status: 'appealed',
-        appeal: { reason: redacted, by: req.user.username, at: new Date() },
-      },
+      { _id: c._id, status: 'held', 'callback.id': { $exists: false } },
+      // The reason is free text, so it is redacted before it is stored.
+      { callback: { id: callbackId, reason: redact(reason).redacted, started_at: clock.now() } },
       { returnDocument: 'after' }
     ).lean();
+    if (!updated) return res.status(409).json({ error: 'call-back already started' });
 
-    if (!updated) {
-      // Same 404 for "no such case" and "not your session", so ids can't be probed.
-      const c = await Case.findOne({ _id: req.params.id, session_id }).lean();
-      if (!c) return res.status(404).json({ error: 'case not found' });
-      return res.status(409).json({ error: c.appeal ? 'case already appealed' : 'only blocked cases can be appealed' });
-    }
-
-    await Audit.create({
-      action: 'appeal', actor: req.user, session_id: updated.session_id,
-      event_id: updated.event_id, case_id: updated._id,
-      R: updated.R, tier: updated.tier, hold: updated.hold,
+    await auditCase('appeal', updated, req.user);
+    res.json({
+      case_id: String(updated._id),
+      status: updated.status,
+      callback: 'calling', // mock: "your bank is calling you to verify"
+      callback_id: callbackId, // the demo UI sends this back to confirm
+      hold_expires_at: updated.hold_expires_at,
     });
+  });
 
-    res.json(updated);
+  // Step 2: the call verified the payer. body: { session_id, callback_id }
+  //   MEDIUM/HIGH -> released, returns seconds_held
+  //   CRITICAL    -> escalated to the analyst queue, still held
+  app.post('/cases/:id/appeal/confirm', requireRole('user'), async (req, res) => {
+    const { callback_id } = req.body || {};
+    if (typeof callback_id !== 'string' || !callback_id) {
+      return res.status(400).json({ error: 'callback_id is required' });
+    }
+    const c = await findOwnCase(req, res);
+    if (!c) return;
+    if (!c.callback || !c.callback.id) return res.status(409).json({ error: 'no call-back in progress, appeal first' });
+    if (c.callback.id !== callback_id) return res.status(400).json({ error: 'callback_id does not match' });
+
+    const updated = await resolveHold(c, 'callback', req.user, {
+      filter: { 'callback.id': callback_id, 'callback.confirmed_at': { $exists: false } },
+      set: { 'callback.confirmed_at': clock.now() },
+    });
+    // Lost a race with the expiry sweep or an analyst.
+    if (!updated) return res.status(409).json({ error: 'case is no longer on hold' });
+
+    res.json({
+      case_id: String(updated._id),
+      status: updated.status, // released | escalated
+      hold: updated.hold,
+      seconds_held: updated.seconds_held ?? null, // null while still held (CRITICAL)
+    });
   });
 
   // --- audit (analyst only, read-only) ---
@@ -470,7 +643,10 @@ function createApp() {
 // ---------------------------------------------------------------------------
 async function start() {
   await mongoose.connect(MONGO_URL);
-  createApp().listen(PORT, () => console.log(`Vyakhya API on http://localhost:${PORT}`));
+  startHoldExpiry();
+  createApp().listen(PORT, () =>
+    console.log(`Vyakhya API on http://localhost:${PORT} (holds expire after ${HOLD_SECONDS}s)`)
+  );
 }
 
 if (require.main === module) {
@@ -480,4 +656,8 @@ if (require.main === module) {
   });
 }
 
-module.exports = { createApp, tierFor, explain, validateScoreBody, Event, Case, Audit };
+module.exports = {
+  createApp, tierFor, explain, validateScoreBody,
+  expireHolds, startHoldExpiry, clock, HOLD_SECONDS,
+  Event, Case, Audit,
+};
