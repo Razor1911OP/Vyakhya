@@ -1,4 +1,5 @@
 # Vyakhya
+<<<<<<< HEAD
 
 > **"The scam went AI-native. The payment still looks legitimate."**
 
@@ -366,3 +367,6 @@ Inspired by research on UPI fraud, smishing detection, and behavioral biometrics
 ---
 
 **Status**: Detection engine operational ✅ | Models: Dummy (train real ones next) ⚠️ | Latency: < 100ms avg 🚀
+=======
+AI + CyberSecurity Scam UPI owrkflow driven Project
+>>>>>>> 2b1ab8f4eb6800b2d2b5e1fb115cf3ca5f066d23
