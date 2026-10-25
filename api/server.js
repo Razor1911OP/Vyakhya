@@ -80,6 +80,7 @@ const REASON_TEXT = {
   NEW_GEO: 'This payment comes from an unusual location.',
   NEW_PAYEE: 'The receiving UPI ID was created very recently.',
   AMOUNT_SPIKE: 'This amount is much higher than you usually send.',
+  SCAM_TEXT: 'The message reads like a known scam pattern.',
   OTP_REQUEST: 'The message asks you to share an OTP or PIN. Banks never ask for these.',
   URGENCY: 'The message pushes you to act fast, a common scam pressure tactic.',
   IMPERSONATION: 'The message claims to be from a bank, police or government office.',
